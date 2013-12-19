@@ -17,6 +17,13 @@ public class Timer {
     }
     
     /**
+     * prints out the timer.
+     */
+    public String toString() {
+        return Integer.toString(timer);
+    }
+    
+    /**
      * updates the timer
      */
     public void updateTimer() {

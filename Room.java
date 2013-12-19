@@ -17,7 +17,8 @@ import java.util.HashMap;
 
 public class Room {
     private String description;
-    private HashMap<String, Room> exits;        // stores exits of this room.
+    private HashMap<String, Room> exits; // stores exits of this room.
+    private HashMap<String, String> exitInfo; // stores properties of the exits
 
     /**
      * Create a room described "description". Initially, it has
@@ -28,6 +29,7 @@ public class Room {
     public Room(String description) {
         this.description = description;
         exits = new HashMap<String, Room>();
+        exitInfo = new HashMap<String, String>();
     }
 
     /**
@@ -36,7 +38,18 @@ public class Room {
      * @param neighbor  The room to which the exit leads.
      */
     public void setExit(String direction, Room neighbor) {
+        setExit(direction, neighbor, "ok");
+    }
+    
+    /**
+     * Define a special exit from this room (one-way, locked, etc).
+     * @param direction The direction of the exit.
+     * @param neighbor  The room to which the exit leads.
+     * @param state     The state of the exit (default "ok" - i.e. locked, trapped, ok)
+     */
+    public void setExit(String direction, Room neighbor, String state) {
         exits.put(direction, neighbor);
+        exitInfo.put(direction + "State", state);
     }
 
     /**
@@ -57,6 +70,12 @@ public class Room {
         return "You are " + description + ".\n" + getExitString();
     }
 
+    /**
+     * Gets the state of a specific exit
+     */
+    public String getState(String direction) {
+        return exitInfo.get(direction + "State");
+    }
     /**
      * Return a string describing the room's exits, for example
      * "Exits: north west".

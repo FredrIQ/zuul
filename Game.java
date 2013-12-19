@@ -17,6 +17,7 @@
 
 public class Game {
     private Parser parser;
+    private Timer timer;
     private Room currentRoom;
     
     /**
@@ -32,6 +33,7 @@ public class Game {
      */
     public Game() {
         createRooms();
+        timer = new Timer(60, -1, 5);
         parser = new Parser();
     }
 
@@ -49,7 +51,7 @@ public class Game {
         office = new Room("in the computing admin office");
         
         // initialise room exits
-        outside.setExit("east", theater);
+        outside.setExit("east", theater, "trapdoor");
         outside.setExit("south", lab);
         outside.setExit("west", pub);
 
@@ -75,7 +77,7 @@ public class Game {
         // execute them until the game is over.
                 
         boolean finished = false;
-        while (! finished) {
+        while (!finished) {
             Command command = parser.getCommand();
             finished = processCommand(command);
         }
@@ -90,6 +92,7 @@ public class Game {
         System.out.println("Welcome to the World of Zuul!");
         System.out.println("World of Zuul is a new, incredibly boring adventure game.");
         System.out.println("Type 'help' if you need help.");
+        System.out.println("You have "+timer+"s to win.");
         System.out.println();
         System.out.println(currentRoom.getLongDescription());
     }
@@ -100,16 +103,19 @@ public class Game {
      * @return true If the command ends the game, false otherwise.
      */
     private boolean processCommand(Command command) {
-        boolean wantToQuit = false;
+        boolean quitGame = false;
+        boolean updateTimer = true;
 
         String commandWord = command.getCommandWord();
         if (commandWord == null) { // unknown command
             System.out.println("Huh? I don't understand what you're talking about...");
+            updateTimer = false;
             return false;
         }
         switch (commandWord) {
             case "help":
                 printHelp();
+                updateTimer = false; // this is metagaming, don't bother with the timer
                 break;
                 
             case "go":
@@ -117,11 +123,22 @@ public class Game {
                 break;
                 
             case "quit":
-                wantToQuit = quit(command);
+                quitGame = quit(command);
+                updateTimer = false;
                 break;
                 
         }
-        return wantToQuit;
+        if (updateTimer) {
+            timer.updateTimer();
+            if (timer.hasExpired()) {
+                System.out.println("Time's up - you lost!");
+                quitGame = true;
+            } else if (timer.isLow()) {
+                System.out.println("Time is running low!");
+                System.out.println("You have "+timer+"s left...");
+            }
+        }
+        return quitGame;
     }
 
     // implementations of user commands:
@@ -156,12 +173,14 @@ public class Game {
         Room nextRoom = currentRoom.getExit(direction);
 
         if (nextRoom == null) {
-            System.out.println("There is no door!");
+            System.out.println("There's nothing there!");
+            return;
+        } if (currentRoom.getState(direction) == "trapdoor") {
+            System.out.println("That way can only be taken from the other side!");
+            return;
         }
-        else {
-            currentRoom = nextRoom;
-            System.out.println(currentRoom.getLongDescription());
-        }
+        currentRoom = nextRoom;
+        System.out.println(currentRoom.getLongDescription());
     }
 
     /** 
