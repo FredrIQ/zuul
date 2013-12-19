@@ -261,8 +261,6 @@ public class Game {
             System.out.println("Quit what?");
             return false;
         }
-        else {
-            return true;  // signal that we want to quit
-        }
+        return true;
     }
 }
