@@ -122,21 +122,21 @@ public class Game {
             return false;
         }
         switch (commandWord) {
-            case "help":
-                printHelp();
-                updateTimer = false; // this is metagaming, don't bother with the timer
+            case "back":
+                gotoWaypoint();
                 break;
 
             case "go":
                 goRoom(command);
                 break;
 
-            case "mark":
-                setWaypoint(currentRoom);
+            case "help":
+                printHelp();
+                updateTimer = false; // this is metagaming, don't bother with the timer
                 break;
 
-            case "back":
-                gotoWaypoint();
+            case "mark":
+                setWaypoint(currentRoom);
                 break;
 
             case "quit":
@@ -199,10 +199,6 @@ public class Game {
         }
         
         switch (currentRoom.getState(direction)) {
-            case "trapdoor":
-                System.out.println("That way can only be taken from the other side!");
-                break;
-
             case "locked":
                 System.out.println("That door is locked! You can unlock it with a key, though.");
                 break;
@@ -210,6 +206,10 @@ public class Game {
             case "ok":
                 currentRoom = nextRoom;
                 getRoomInfo();
+                break;
+
+            case "trapdoor":
+                System.out.println("That way can only be taken from the other side!");
                 break;
 
             default:
