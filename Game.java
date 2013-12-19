@@ -18,7 +18,9 @@
 public class Game {
     private Parser parser;
     private Timer timer;
+    private Key key;
     private Room currentRoom;
+    private Room beamerRoom;
     
     /**
      * Starts the game
@@ -34,6 +36,7 @@ public class Game {
     public Game() {
         createRooms();
         timer = new Timer(60, -1, 5);
+        key = new Key();
         parser = new Parser();
     }
 
@@ -41,26 +44,32 @@ public class Game {
      * Create all the rooms and link their exits together.
      */
     private void createRooms() {
-        Room outside, theater, pub, lab, office;
+        Room outside, theater, pub, lab, office, classroom;
       
         // create the rooms
         outside = new Room("outside the main entrance of the university");
-        theater = new Room("in a lecture theater");
+        theater = new Room("in a lecture theater", true);
         pub = new Room("in the campus pub");
         lab = new Room("in a computing lab");
         office = new Room("in the computing admin office");
+        classroom = new Room("in a plain classroom");
         
         // initialise room exits
-        outside.setExit("east", theater, "trapdoor");
-        outside.setExit("south", lab);
+        outside.setExit("east", theater);
+        outside.setExit("south", classroom);
         outside.setExit("west", pub);
 
         theater.setExit("west", outside);
+        theater.setExit("south", lab);
 
         pub.setExit("east", outside);
 
-        lab.setExit("north", outside);
-        lab.setExit("east", office);
+        classroom.setExit("north", outside);
+        classroom.setExit("east", lab);
+        
+        lab.setExit("north", theater, "trapdoor");
+        lab.setExit("east", office, "locked");
+        lab.setExit("west", classroom);
 
         office.setExit("west", lab);
 
@@ -117,16 +126,24 @@ public class Game {
                 printHelp();
                 updateTimer = false; // this is metagaming, don't bother with the timer
                 break;
-                
+
             case "go":
                 goRoom(command);
                 break;
-                
+
+            case "mark":
+                setWaypoint(currentRoom);
+                break;
+
+            case "back":
+                gotoWaypoint();
+                break;
+
             case "quit":
                 quitGame = quit(command);
                 updateTimer = false;
                 break;
-                
+
         }
         if (updateTimer) {
             timer.updateTimer();
@@ -172,15 +189,66 @@ public class Game {
         // Try to leave current room.
         Room nextRoom = currentRoom.getExit(direction);
 
-        if (nextRoom == null) {
+        if (nextRoom == null) { // there's nothing in that direction
             System.out.println("There's nothing there!");
             return;
-        } if (currentRoom.getState(direction) == "trapdoor") {
-            System.out.println("That way can only be taken from the other side!");
-            return;
         }
-        currentRoom = nextRoom;
+        if (key.isOwned() && currentRoom.getState(direction) == "locked") {
+            currentRoom.setState(direction, "ok");
+            System.out.println("You unlocked the door!");
+        }
+        
+        switch (currentRoom.getState(direction)) {
+            case "trapdoor":
+                System.out.println("That way can only be taken from the other side!");
+                break;
+
+            case "locked":
+                System.out.println("That door is locked! You can unlock it with a key, though.");
+                break;
+
+            case "ok":
+                currentRoom = nextRoom;
+                getRoomInfo();
+                break;
+
+            default:
+                System.out.println("Internal error. Please file a bug report.");
+                break;
+
+        }
+    }
+    
+    /**
+     * Retrieves room information.
+     */
+    private void getRoomInfo() {
         System.out.println(currentRoom.getLongDescription());
+        if (currentRoom.hasKey() && !key.isOwned()) {
+            System.out.println("You found a key!");
+            key.claim();
+        }
+    }
+    
+    /**
+     * Waypoint (beamer) - allows you to "remember" this place.
+     * This way, you can always go back to the place,
+     * unless you mark a new point.
+     */
+    private void setWaypoint(Room room) {
+        beamerRoom = currentRoom;
+        System.out.println("You've put this room in your memory.");
+        System.out.println("Now, you can go back to this room whenever you want to with 'back'.");
+    }
+    private boolean gotoWaypoint() {
+        if (beamerRoom == null) {
+            System.out.println("You never bothered to remember any place...");
+            return false;
+        }
+        currentRoom = beamerRoom;
+        System.out.println("You went back!");
+        getRoomInfo();
+        return true;
     }
 
     /** 

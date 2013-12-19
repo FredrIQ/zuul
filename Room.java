@@ -17,6 +17,7 @@ import java.util.HashMap;
 
 public class Room {
     private String description;
+    private boolean hasKey;
     private HashMap<String, Room> exits; // stores exits of this room.
     private HashMap<String, String> exitInfo; // stores properties of the exits
 
@@ -27,7 +28,24 @@ public class Room {
      * @param description The room's description.
      */
     public Room(String description) {
+        initRoom(description, false);
+    }
+    
+    /**
+     * Create a room, but clarify whether or not it has a key.
+     * @param description The room's description.
+     * @param hasKey Whether or not the room contains a key.
+     */
+    public Room(String description, boolean hasKey) {
+        initRoom(description, hasKey);
+    }
+    
+    /**
+     * Actual room initialization.
+     */
+    private void initRoom(String description, boolean hasKey) {
         this.description = description;
+        this.hasKey = hasKey;
         exits = new HashMap<String, Room>();
         exitInfo = new HashMap<String, String>();
     }
@@ -76,6 +94,14 @@ public class Room {
     public String getState(String direction) {
         return exitInfo.get(direction + "State");
     }
+    
+    /**
+     * Sets the exit state.
+     */
+    public void setState(String direction, String state) {
+        exitInfo.put(direction + "State", state);
+    }
+    
     /**
      * Return a string describing the room's exits, for example
      * "Exits: north west".
@@ -98,6 +124,13 @@ public class Room {
      */
     public Room getExit(String direction) {
         return exits.get(direction);
+    }
+    
+    /**
+     * Checks if the room has the key.
+     */
+    public boolean hasKey() {
+        return hasKey;
     }
 }
 
