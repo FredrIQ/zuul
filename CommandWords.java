@@ -9,8 +9,7 @@
  * @version 2011.08.08
  */
 
-public class CommandWords
-{
+public class CommandWords {
     // a constant array that holds all valid command words
     private static final String[] validCommands = {
         "go", "quit", "help"
@@ -19,8 +18,7 @@ public class CommandWords
     /**
      * Constructor - initialise the command words.
      */
-    public CommandWords()
-    {
+    public CommandWords() {
         // nothing to do at the moment...
     }
 
@@ -28,8 +26,7 @@ public class CommandWords
      * Check whether a given String is a valid command word. 
      * @return true if it is, false if it isn't.
      */
-    public boolean isCommand(String aString)
-    {
+    public boolean isCommand(String aString) {
         for(int i = 0; i < validCommands.length; i++) {
             if(validCommands[i].equals(aString))
                 return true;
@@ -41,8 +38,7 @@ public class CommandWords
     /**
      * Print all valid commands to System.out.
      */
-    public void showAll() 
-    {
+    public void showAll() {
         for(String command: validCommands) {
             System.out.print(command + "  ");
         }

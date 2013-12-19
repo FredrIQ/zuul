@@ -16,16 +16,14 @@ import java.util.Scanner;
  * @author  Michael Kölling and David J. Barnes
  * @version 2011.08.08
  */
-public class Parser 
-{
+public class Parser {
     private CommandWords commands;  // holds all valid command words
     private Scanner reader;         // source of command input
 
     /**
      * Create a parser to read from the terminal window.
      */
-    public Parser() 
-    {
+    public Parser() {
         commands = new CommandWords();
         reader = new Scanner(System.in);
     }
@@ -33,8 +31,7 @@ public class Parser
     /**
      * @return The next command from the user.
      */
-    public Command getCommand() 
-    {
+    public Command getCommand() {
         String inputLine;   // will hold the full input line
         String word1 = null;
         String word2 = null;
@@ -66,8 +63,7 @@ public class Parser
     /**
      * Print out a list of valid command words.
      */
-    public void showCommands()
-    {
+    public void showCommands() {
         commands.showAll();
     }
 }

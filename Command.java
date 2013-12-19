@@ -17,8 +17,7 @@
  * @version 2011.08.08
  */
 
-public class Command
-{
+public class Command {
     private String commandWord;
     private String secondWord;
 
@@ -29,8 +28,7 @@ public class Command
      *                  was not recognised.
      * @param secondWord The second word of the command.
      */
-    public Command(String firstWord, String secondWord)
-    {
+    public Command(String firstWord, String secondWord) {
         commandWord = firstWord;
         this.secondWord = secondWord;
     }
@@ -40,8 +38,7 @@ public class Command
      * command was not understood, the result is null.
      * @return The command word.
      */
-    public String getCommandWord()
-    {
+    public String getCommandWord() {
         return commandWord;
     }
 
@@ -49,24 +46,21 @@ public class Command
      * @return The second word of this command. Returns null if there was no
      * second word.
      */
-    public String getSecondWord()
-    {
+    public String getSecondWord() {
         return secondWord;
     }
 
     /**
      * @return true if this command was not understood.
      */
-    public boolean isUnknown()
-    {
+    public boolean isUnknown() {
         return (commandWord == null);
     }
 
     /**
      * @return true if the command has a second word.
      */
-    public boolean hasSecondWord()
-    {
+    public boolean hasSecondWord() {
         return (secondWord != null);
     }
 }
