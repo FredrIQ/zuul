@@ -17,7 +17,7 @@ import java.util.HashMap;
 
 public class Room {
     private String description;
-    private boolean hasKey;
+    private Key key;
     private HashMap<String, Room> exits; // stores exits of this room.
     private HashMap<String, String> exitInfo; // stores properties of the exits
 
@@ -28,7 +28,7 @@ public class Room {
      * @param description The room's description.
      */
     public Room(String description) {
-        initRoom(description, false);
+        initRoom(description, null);
     }
     
     /**
@@ -36,16 +36,16 @@ public class Room {
      * @param description The room's description.
      * @param hasKey Whether or not the room contains a key.
      */
-    public Room(String description, boolean hasKey) {
-        initRoom(description, hasKey);
+    public Room(String description, Key key) {
+        initRoom(description, key);
     }
     
     /**
      * Actual room initialization.
      */
-    private void initRoom(String description, boolean hasKey) {
+    private void initRoom(String description, Key key) {
         this.description = description;
-        this.hasKey = hasKey;
+        this.key = key;
         exits = new HashMap<String, Room>();
         exitInfo = new HashMap<String, String>();
     }
@@ -57,6 +57,17 @@ public class Room {
      */
     public void setExit(String direction, Room neighbor) {
         setExit(direction, neighbor, "ok");
+    }
+    
+    /**
+     * Define a locked exit.
+     * @param direction The direction of the exit.
+     * @param neighbor  The room to which the exit leads.
+     * @param key       The key needed to open the door.
+     */
+    public void setExit(String direction, Room neighbor, Key key) {
+        exitInfo.put(direction + "Key", key.toString());
+        setExit(direction, neighbor, "locked");
     }
     
     /**
@@ -127,10 +138,34 @@ public class Room {
     }
     
     /**
+     * Get the room key lock identifier.
+     */
+    public String getExitKey(String direction) {
+        return exitInfo.get(direction + "Key");
+    }
+    
+    /**
      * Checks if the room has the key.
      */
     public boolean hasKey() {
-        return hasKey;
+        if (this.key == null) {
+            return false;
+        }
+        return true;
+    }
+    
+    /**
+     * Get the room key.
+     */
+    public Key getKey() {
+        return key;
+    }
+    
+    /**
+     * Get the key identifer.
+     */
+    public String getKeyInfo() {
+        return key.toString();
     }
 }
 

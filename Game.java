@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 /**
  *  This class is the main class of the "World of Zuul" application. 
  *  "World of Zuul" is a very simple, text based adventure game.  Users 
@@ -18,7 +20,7 @@
 public class Game {
     private Parser parser;
     private Timer timer;
-    private Key key;
+    private ArrayList<Key> keys;
     private Room currentRoom;
     private Room beamerRoom;
     
@@ -36,7 +38,7 @@ public class Game {
     public Game() {
         createRooms();
         timer = new Timer(60, -1, 5);
-        key = new Key();
+        keys = new ArrayList<Key>();
         parser = new Parser();
     }
 
@@ -45,10 +47,12 @@ public class Game {
      */
     private void createRooms() {
         Room outside, theater, pub, lab, office, classroom;
+        
+        Key officeKey = new Key("Office");
       
         // create the rooms
         outside = new Room("outside the main entrance of the university");
-        theater = new Room("in a lecture theater", true);
+        theater = new Room("in a lecture theater", officeKey);
         pub = new Room("in the campus pub");
         lab = new Room("in a computing lab");
         office = new Room("in the computing admin office");
@@ -68,7 +72,7 @@ public class Game {
         classroom.setExit("east", lab);
         
         lab.setExit("north", theater, "trapdoor");
-        lab.setExit("east", office, "locked");
+        lab.setExit("east", office, officeKey);
         lab.setExit("west", classroom);
 
         office.setExit("west", lab);
@@ -193,14 +197,20 @@ public class Game {
             System.out.println("There's nothing there!");
             return;
         }
-        if (key.isOwned() && currentRoom.getState(direction) == "locked") {
-            currentRoom.setState(direction, "ok");
-            System.out.println("You unlocked the door!");
+        if (currentRoom.getState(direction) == "locked") { // check if needed key is owned.
+            for (Key key : keys) {
+                if (key.toString().equals(currentRoom.getExitKey(direction))) {
+                    currentRoom.setState(direction, "ok");
+                    System.out.println("You unlocked the door!");
+                    break;
+                }
+            }
         }
         
         switch (currentRoom.getState(direction)) {
             case "locked":
-                System.out.println("That door is locked! You can unlock it with a key, though.");
+                String keyLabel = currentRoom.getExitKey(direction);
+                System.out.println("That door is locked! You can unlock it with a key labeled "+keyLabel+", though.");
                 break;
 
             case "ok":
@@ -224,9 +234,17 @@ public class Game {
      */
     private void getRoomInfo() {
         System.out.println(currentRoom.getLongDescription());
-        if (currentRoom.hasKey() && !key.isOwned()) {
+        if (currentRoom.hasKey()) {
+            for (Key key : keys) {
+                if (key.toString().equals(currentRoom.getKeyInfo())) {
+                    return;
+                }
+            }
             System.out.println("You found a key!");
-            key.claim();
+            Key gotKey = currentRoom.getKey();
+            System.out.println("This key is labeled: " + gotKey);
+            gotKey.claim();
+            keys.add(gotKey);
         }
     }
     

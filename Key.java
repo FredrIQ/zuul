@@ -3,9 +3,11 @@
  */
 public class Key {
     boolean owned;
+    String identifier;
     
-    public Key() {
+    public Key(String identifier) {
         owned = false;
+        this.identifier = identifier;
     }
     
     /**
@@ -20,5 +22,9 @@ public class Key {
      */
     public void claim() {
         owned = true;
+    }
+    
+    public String toString() {
+        return identifier;
     }
 }
