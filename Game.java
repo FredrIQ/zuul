@@ -119,31 +119,32 @@ public class Game {
         boolean quitGame = false;
         boolean updateTimer = true;
 
-        String commandWord = command.getCommandWord();
-        if (commandWord == null) { // unknown command
-            System.out.println("Huh? I don't understand what you're talking about...");
-            updateTimer = false;
-            return false;
-        }
+        CommandWord commandWord = command.getCommandWord();
+
         switch (commandWord) {
-            case "back":
+            case UNKNOWN:
+                System.out.println("Huh? I don't understand what you're talking about...");
+                updateTimer = false;
+                return false;
+
+            case BACK:
                 gotoWaypoint();
                 break;
 
-            case "go":
+            case GO:
                 goRoom(command);
                 break;
 
-            case "help":
+            case HELP:
                 printHelp();
                 updateTimer = false; // this is metagaming, don't bother with the timer
                 break;
 
-            case "mark":
+            case MARK:
                 setWaypoint(currentRoom);
                 break;
 
-            case "quit":
+            case QUIT:
                 quitGame = quit(command);
                 updateTimer = false;
                 break;

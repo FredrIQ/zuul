@@ -1,3 +1,5 @@
+import java.util.HashMap;
+
 /**
  * This class is part of the "World of Zuul" application. 
  * "World of Zuul" is a very simple, text based adventure game.
@@ -10,29 +12,45 @@
  */
 
 public class CommandWords {
-    // a constant array that holds all valid command words
-    private static final String[] validCommands = {
-        "go", "quit", "help", "mark", "back"
-    };
+    // map between command name and the associated enum
+    private HashMap<String, CommandWord> validCommands;
+    
+    /**
+     * Initializes the commands.
+     */
+    public CommandWords() {
+        validCommands = new HashMap<String, CommandWord>();
+        for (CommandWord command : CommandWord.values()) {
+            if (command != CommandWord.UNKNOWN) {
+                validCommands.put(command.toString(), command);
+            }
+        }
+    }
+    
+    /**
+     * Finds the CommandWord associated with a command word.
+     */
+    public CommandWord getCommandWord(String commandWord) {
+        CommandWord command = validCommands.get(commandWord);
+        if (command == null) {
+            return CommandWord.UNKNOWN;
+        }
+        return command;
+    }
 
     /**
      * Check whether a given String is a valid command word. 
      * @return true if it is, false if it isn't.
      */
     public boolean isCommand(String aString) {
-        for(int i = 0; i < validCommands.length; i++) {
-            if(validCommands[i].equals(aString))
-                return true;
-        }
-        // if we get here, the string was not found in the commands
-        return false;
+        return validCommands.containsKey(aString);
     }
 
     /**
      * Print all valid commands to System.out.
      */
     public void showAll() {
-        for(String command: validCommands) {
+        for (String command : validCommands.keySet()) {
             System.out.print(command + "  ");
         }
         System.out.println();
