@@ -149,6 +149,10 @@ public class Game {
                 updateTimer = false;
                 break;
 
+            case TIME:
+                System.out.println("You have "+timer+"s left...");
+                break;
+
         }
         if (updateTimer) {
             timer.updateTimer();
